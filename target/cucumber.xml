@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="Cucumber" time="403.646" tests="8" skipped="0" failures="1" errors="0">
+<testcase classname="Navia Online Trading Market Login" name="Login Navia" time="89.329">
+<system-out><![CDATA[
+Given User Navigate to Navia................................................passed
+When User Click login with client code......................................passed
+And User Enter Client Code..................................................passed
+And User  Enter Password....................................................passed
+And User Click Agree CheckBox...............................................passed
+And User Click Login button.................................................passed
+And User Click Otp Verification and enter manualy...........................passed
+And User Click Login Again..................................................passed
+]]></system-out>
+</testcase>
+<testcase classname="Navia Online Trading Market Login" name="Add and Remove Any Script and Verify" time="9.405">
+<failure type="org.openqa.selenium.ElementClickInterceptedException" message="element click intercepted: Element &lt;input type=&quot;text&quot; id=&quot;project-id&quot; placeholder=&quot;Search eg: NIFTY opt 18600 PE&quot;&gt; is not clickable at point (202, 111). Other element would receive the click: &lt;div class=&quot;dhx_window__overlay&quot;&gt;&lt;/div&gt;
+  (Session info: chrome=147.0.7727.102)
+Build info: version: '4.14.1', revision: '03f8ede370'
+System info: os.name: 'Windows 10', os.arch: 'amd64', os.version: '10.0', java.version: '17'
+Driver info: org.openqa.selenium.chrome.ChromeDriver
+Command: [9c50e8fb55f7cd9d353cb319b0782098, clickElement {id=f.98DC18C3EF42964405F921F178E5B1EE.d.FA2B862506B873FA13094B6F263AADB8.e.114}]
+Capabilities {acceptInsecureCerts: false, browserName: chrome, browserVersion: 147.0.7727.102, chrome: {chromedriverVersion: 147.0.7727.117 (474cc805edd..., userDataDir: C:\Users\ADMIN\AppData\Loca...}, fedcm:accounts: true, goog:chromeOptions: {debuggerAddress: localhost:50385}, goog:processID: 24004, networkConnectionEnabled: false, pageLoadStrategy: normal, platformName: windows, proxy: Proxy(), se:cdp: ws://localhost:50385/devtoo..., se:cdpVersion: 147.0.7727.102, setWindowRect: true, strictFileInteractability: false, timeouts: {implicit: 0, pageLoad: 300000, script: 30000}, unhandledPromptBehavior: dismiss and notify, webauthn:extension:credBlob: true, webauthn:extension:largeBlob: true, webauthn:extension:minPinLength: true, webauthn:extension:prf: true, webauthn:virtualAuthenticators: true}
+Element: [[ChromeDriver: chrome on windows (9c50e8fb55f7cd9d353cb319b0782098)] -&gt; xpath: //input[@id='project-id']]
+Session ID: 9c50e8fb55f7cd9d353cb319b0782098">
+<![CDATA[org.openqa.selenium.ElementClickInterceptedException: element click intercepted: Element <input type="text" id="project-id" placeholder="Search eg: NIFTY opt 18600 PE"> is not clickable at point (202, 111). Other element would receive the click: <div class="dhx_window__overlay"></div>
+  (Session info: chrome=147.0.7727.102)
+Build info: version: '4.14.1', revision: '03f8ede370'
+System info: os.name: 'Windows 10', os.arch: 'amd64', os.version: '10.0', java.version: '17'
+Driver info: org.openqa.selenium.chrome.ChromeDriver
+Command: [9c50e8fb55f7cd9d353cb319b0782098, clickElement {id=f.98DC18C3EF42964405F921F178E5B1EE.d.FA2B862506B873FA13094B6F263AADB8.e.114}]
+Capabilities {acceptInsecureCerts: false, browserName: chrome, browserVersion: 147.0.7727.102, chrome: {chromedriverVersion: 147.0.7727.117 (474cc805edd..., userDataDir: C:\Users\ADMIN\AppData\Loca...}, fedcm:accounts: true, goog:chromeOptions: {debuggerAddress: localhost:50385}, goog:processID: 24004, networkConnectionEnabled: false, pageLoadStrategy: normal, platformName: windows, proxy: Proxy(), se:cdp: ws://localhost:50385/devtoo..., se:cdpVersion: 147.0.7727.102, setWindowRect: true, strictFileInteractability: false, timeouts: {implicit: 0, pageLoad: 300000, script: 30000}, unhandledPromptBehavior: dismiss and notify, webauthn:extension:credBlob: true, webauthn:extension:largeBlob: true, webauthn:extension:minPinLength: true, webauthn:extension:prf: true, webauthn:virtualAuthenticators: true}
+Element: [[ChromeDriver: chrome on windows (9c50e8fb55f7cd9d353cb319b0782098)] -> xpath: //input[@id='project-id']]
+Session ID: 9c50e8fb55f7cd9d353cb319b0782098
+	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+	at java.base/java.lang.reflect.Constructor.newInstanceWithCaller(Constructor.java:499)
+	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:480)
+	at org.openqa.selenium.remote.codec.w3c.W3CHttpResponseCodec.createException(W3CHttpResponseCodec.java:200)
+	at org.openqa.selenium.remote.codec.w3c.W3CHttpResponseCodec.decode(W3CHttpResponseCodec.java:133)
+	at org.openqa.selenium.remote.codec.w3c.W3CHttpResponseCodec.decode(W3CHttpResponseCodec.java:52)
+	at org.openqa.selenium.remote.HttpCommandExecutor.execute(HttpCommandExecutor.java:191)
+	at org.openqa.selenium.remote.service.DriverCommandExecutor.invokeExecute(DriverCommandExecutor.java:200)
+	at org.openqa.selenium.remote.service.DriverCommandExecutor.execute(DriverCommandExecutor.java:175)
+	at org.openqa.selenium.remote.RemoteWebDriver.execute(RemoteWebDriver.java:602)
+	at org.openqa.selenium.remote.RemoteWebElement.execute(RemoteWebElement.java:224)
+	at org.openqa.selenium.remote.RemoteWebElement.click(RemoteWebElement.java:77)
+	at com.stepdefinition.PreMarkets.user_click_the_search_box(PreMarkets.java:34)
+	at ?.User click the search box(file:///C:/Users/ADMIN/Downloads/PreMarket_BowApp/PreMarket_BowApp/src/test/java/com/feature/DailyEightFortyTesting.feature:17)
+]]>
+</failure>
+<system-out><![CDATA[
+When Navigate to home page..................................................skipped
+And User click the search box...............................................failed
+And User Search any "SWIGGY" Script.........................................skipped
+And User Mouse Over and Add a Script "SWIGGY"...............................skipped
+And User POP Up Message Appear Verify POP UP................................skipped
+And User Remove The "SWIGGY" Stock..........................................skipped
+]]></system-out>
+</testcase>
+<testcase classname="Navia Online Trading Market Login" name="Payin - Withdraw Money from Navia" time="28.137">
+<system-out><![CDATA[
+When Navigate to home page..................................................passed
+And User Click The Withdraw button..........................................passed
+]]></system-out>
+</testcase>
+<testcase classname="Navia Online Trading Market Login" name="Payin - Add Money to Navia via UPI" time="48.423">
+<system-out><![CDATA[
+When Navigate to home page..................................................passed
+And User Click Add Money....................................................passed
+And User enter money in amount to add.......................................passed
+And User Choose Pay Using UPI...............................................passed
+And User Enter UPI/ID/Mobile Number and click pay now.......................passed
+]]></system-out>
+</testcase>
+<testcase classname="Navia Online Trading Market Login" name="User Check The Mutual Fund - UPI Payment - functionality" time="58.203">
+<system-out><![CDATA[
+When Navigate to home page..................................................passed
+And User MouseOver Dashboard and Click Mutual Funds.........................passed
+And User Click Explore......................................................passed
+And User Search "Navi Flexi Cap Fund Direct Plan Growth" in Serach Box and enter.passed
+And User Click One Time , enter amount "100" and click pay now..............passed
+And User Click enter UPI ID "6374837965@ptsbi" and Click Pay Via UPI........passed
+]]></system-out>
+</testcase>
+<testcase classname="Navia Online Trading Market Login" name="Verify Charts - Nifty 50 Candle View" time="49.629">
+<system-out><![CDATA[
+When Navigate to home page..................................................passed
+And User Click the Watch List...............................................passed
+And User Select scrip "S&P BSE SENSEX"......................................passed
+And User Click Watch List Again.............................................passed
+And User mouse over the scrip "Nifty 50"....................................passed
+And User Click the Candles Icon.............................................passed
+And User Choose Candle "candle".............................................passed
+And User Check the one Minute and one Day Chart.............................passed
+]]></system-out>
+</testcase>
+<testcase classname="Navia Online Trading Market Login" name="Verify Charts - SENSEX Candle View" time="59.938">
+<system-out><![CDATA[
+When Navigate to home page..................................................passed
+And User Click the Watch List...............................................passed
+And User Select scrip "S&P BSE SENSEX"......................................passed
+And User mouse over the scrip "SENSEX"......................................passed
+And User Click the Candles Icon.............................................passed
+And User Choose Candle "candle".............................................passed
+And User Check the one Minute and one Day Chart.............................passed
+]]></system-out>
+</testcase>
+<testcase classname="Navia Online Trading Market Login" name="Verify Charts - ICICIBANK and HDFCBANK F&amp;O" time="60.096">
+<system-out><![CDATA[
+When Navigate to home page..................................................passed
+And User Select The "ICICIBANK" Stock or F&O to Chart.......................passed
+And User Select The "HDFCBANK" Stock or F&O to Chart........................passed
+]]></system-out>
+</testcase>
+</testsuite>

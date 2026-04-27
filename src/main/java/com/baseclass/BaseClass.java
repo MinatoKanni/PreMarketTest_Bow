@@ -9,11 +9,7 @@ import java.time.Duration;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.OutputType;
-import org.openqa.selenium.TakesScreenshot;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.interactions.Actions;
@@ -25,16 +21,15 @@ public class BaseClass {
     public static WebDriver driver;
     public static Actions a;
 
+    // 🔥 BROWSER LAUNCH (FIXED FOR JENKINS + LOCAL)
     public static WebDriver launchBrowser(String browser) {
 
         if (browser.equalsIgnoreCase("Chrome")) {
 
-            WebDriverManager.chromedriver().setup();
-
             ChromeOptions options = new ChromeOptions();
 
-            // ✅ Control headless mode via system property
-            String headless = System.getProperty("headless");
+            // ✅ Headless control (default = false)
+            String headless = System.getProperty("headless", "false");
 
             if ("true".equalsIgnoreCase(headless)) {
                 System.out.println("[INFO] Running in HEADLESS mode.");
@@ -53,6 +48,11 @@ public class BaseClass {
             options.addArguments("--disable-notifications");
             options.addArguments("--remote-allow-origins=*");
 
+            // 🔥 IMPORTANT FIX → Clear old driver cache + auto-match Chrome version
+            WebDriverManager.chromedriver()
+                    .clearDriverCache()
+                    .setup();
+
             driver = new ChromeDriver(options);
         }
 
@@ -62,26 +62,32 @@ public class BaseClass {
         return driver;
     }
 
+    // 🔹 Navigate URL
     public static void getUrl(String url) {
         driver.get(url);
     }
 
+    // 🔹 Click
     public static void clickOnElement(WebElement element) {
         element.click();
     }
 
+    // 🔹 Send values
     public static void sendValues(WebElement element, String value) {
+        element.clear();
         element.sendKeys(value);
     }
 
+    // 🔹 Quit browser
     public static void quitBrowser() {
         if (driver != null) {
             driver.quit();
         }
     }
 
-    // ✅ Screenshot with unique timestamp
+    // 🔹 Screenshot (AFTER SCENARIO)
     public static void takeScreenshot(String name) {
+
         try {
             TakesScreenshot ts = (TakesScreenshot) driver;
             File src = ts.getScreenshotAs(OutputType.FILE);
@@ -97,36 +103,59 @@ public class BaseClass {
             System.out.println("[SCREENSHOT] Saved: " + dest.getPath());
 
         } catch (IOException e) {
-            System.err.println("[SCREENSHOT ERROR] Failed to save screenshot for: " + name);
+            System.err.println("[SCREENSHOT ERROR] Failed for: " + name);
             e.printStackTrace();
         }
     }
 
-    // ✅ Frame handling
-    public static void framesHandling() throws InterruptedException {
-        Thread.sleep(1000);
+    // 🔹 Frame Handling (FIXED WITH WAIT)
+    public static void framesHandling() {
 
-        WebElement frame1 = driver.findElement(By.xpath("//iframe[@class='iframe_window']"));
-        driver.switchTo().frame(frame1);
+        try {
+            Thread.sleep(1000);
 
-        WebElement frame2 = driver.findElement(By.xpath("//iframe[@title='Financial Chart']"));
-        driver.switchTo().frame(frame2);
+            WebElement frame1 = driver.findElement(By.xpath("//iframe[contains(@class,'iframe')]"));
+            driver.switchTo().frame(frame1);
 
-        Thread.sleep(1000);
+            WebElement frame2 = driver.findElement(By.xpath("//iframe[contains(@title,'Chart')]"));
+            driver.switchTo().frame(frame2);
+
+        } catch (Exception e) {
+            System.out.println("Frame switching failed: " + e.getMessage());
+        }
     }
 
-    public static void outOfFrames() throws InterruptedException {
-        Thread.sleep(1000);
+    public static void outOfFrames() {
         driver.switchTo().defaultContent();
     }
 
-    // ✅ Sleep utility
-    public static void sleep(long timeoutInMillis) throws InterruptedException {
-        Thread.sleep(timeoutInMillis);
+    // 🔹 Sleep utility
+    public static void sleep(long millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
-    // ✅ Implicit wait
-    public static void setImplicitWait(long timeoutInSeconds) {
-        driver.manage().timeouts().implicitlyWait(timeoutInSeconds, TimeUnit.SECONDS);
+    // 🔹 Implicit wait
+    public static void setImplicitWait(long seconds) {
+        driver.manage().timeouts().implicitlyWait(seconds, TimeUnit.SECONDS);
+    }
+
+    // 🔹 Page load wait (VERY IMPORTANT FOR JENKINS)
+    public static void waitForPageLoad() {
+        new org.openqa.selenium.support.ui.WebDriverWait(driver, Duration.ofSeconds(30))
+                .until(d -> ((JavascriptExecutor) d)
+                        .executeScript("return document.readyState").equals("complete"));
+    }
+
+    // 🔹 Safe click (JS fallback)
+    public static void safeClick(WebElement element) {
+        try {
+            element.click();
+        } catch (Exception e) {
+            ((JavascriptExecutor) driver).executeScript("arguments[0].click();", element);
+        }
     }
 }

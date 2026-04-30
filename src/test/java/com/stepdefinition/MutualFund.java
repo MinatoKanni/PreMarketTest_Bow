@@ -7,6 +7,8 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import com.baseclass.BaseClass;
 
@@ -21,7 +23,7 @@ public class MutualFund extends BaseClass {
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
 
         WebElement dashBoard = driver.findElement(By.xpath(
-            "(//span[text()='Dashboard']//ancestor::li)[1]"));
+            "//label[text()='Dashboard']//ancestor::li[1]"));
 
         Actions ac = new Actions(driver);
         ac.moveToElement(dashBoard).perform();
@@ -31,8 +33,6 @@ public class MutualFund extends BaseClass {
         Thread.sleep(2000);
     }
 
-    // FIX: Replaced Robot.keyPress(VK_ENTER) with Selenium Keys.ENTER
-    // Robot uses OS-level keyboard which doesn't work headless (no display)
     @When("User click Explore and Search {string}")
     public void user_click_explore_and_search(String string) throws InterruptedException {
         Thread.sleep(2000);
@@ -56,7 +56,6 @@ public class MutualFund extends BaseClass {
         searchInput.sendKeys(string);
         Thread.sleep(2000);
 
-        // FIX: Robot replaced with Selenium sendKeys Enter
         searchInput.sendKeys(Keys.ENTER);
         Thread.sleep(1000);
     }
@@ -94,19 +93,34 @@ public class MutualFund extends BaseClass {
     @When("User Click One Time , enter amount {string} and click pay now")
     public void user_click_one_time_enter_amount_and_click_pay_now(String string)
             throws InterruptedException {
+        Thread.sleep(2000);
+
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
+
+        // FIX 4: ElementNotInteractableException on //span[text()='One-Time'].
+        // The MF iframe content renders asynchronously — the span is in the DOM
+        // but not yet interactable when click() is called immediately.
+        // Using scrollIntoView + JS click handles both the visibility and
+        // interactability issues reliably in headless mode.
+        WebElement oneTime = wait.until(ExpectedConditions.presenceOfElementLocated(
+                By.xpath("//span[text()='One-Time']")));
+
+        JavascriptExecutor js = (JavascriptExecutor) driver;
+        js.executeScript("arguments[0].scrollIntoView({block:'center'});", oneTime);
+        Thread.sleep(500);
+        js.executeScript("arguments[0].click();", oneTime);
         Thread.sleep(1000);
 
-        driver.findElement(By.xpath("//span[text()='One-Time']")).click();
-        Thread.sleep(1000);
-
-        WebElement amt = driver.findElement(By.xpath("//input[@data-dhx-id='ot_amt']"));
-        Thread.sleep(1000);
+        WebElement amt = wait.until(ExpectedConditions.elementToBeClickable(
+                By.xpath("//input[@data-dhx-id='ot_amt']")));
         amt.click();
-        Thread.sleep(1000);
+        Thread.sleep(500);
         amt.sendKeys(string);
         Thread.sleep(2000);
 
-        driver.findElement(By.xpath("//span[text()='Pay Now']//parent::button")).click();
+        WebElement payNow = wait.until(ExpectedConditions.elementToBeClickable(
+                By.xpath("//span[text()='Pay Now']//parent::button")));
+        js.executeScript("arguments[0].click();", payNow);
         Thread.sleep(1000);
     }
 

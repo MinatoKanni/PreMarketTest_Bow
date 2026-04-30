@@ -22,19 +22,27 @@ public class PreMarkets extends BaseClass {
     Login_Navia_POM l = new Login_Navia_POM(driver);
     Actions ac = new Actions(driver);
 
-    // FIX: Removed static class-level initialization of windowHandles and li.
-    // Static fields are initialized when the class loads — at that point driver
-    // may be null, causing NullPointerException before any test runs.
-    // Window handles are now fetched inside each method that needs them.
+    // ── Scenario: Add and Remove Any Script ────────────────────────────────
 
     @When("User click the search box")
     public void user_click_the_search_box() throws InterruptedException {
         Thread.sleep(4000);
-        driver.findElement(By.xpath("//input[@id='project-id']")).click();
+
+        // FIX 1: //input[@id='project-id'] lives inside the iframe_window iframe.
+        // Clicking it from the default context causes a TimeoutException because
+        // the element is in a nested frame. We must switch into the iframe first.
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
+        WebElement iframe = wait.until(ExpectedConditions.presenceOfElementLocated(
+                By.xpath("//iframe[@class='iframe_window']")));
+        driver.switchTo().frame(iframe);
+
+        wait.until(ExpectedConditions.elementToBeClickable(
+                By.xpath("//input[@id='project-id']"))).click();
     }
 
     @When("User Search any {string} Script")
     public void user_search_any_script(String string) throws InterruptedException {
+        // Already inside the iframe from user_click_the_search_box
         Thread.sleep(2000);
         driver.findElement(By.xpath("//input[@id='project-id']")).sendKeys(string);
         Thread.sleep(2000);
@@ -74,10 +82,15 @@ public class PreMarkets extends BaseClass {
         driver.findElement(By.xpath(
             "(//span[text()='" + string + "']//ancestor::li//descendant::span[@class='s_add_sym'])[1]"))
             .click();
+
+        // Switch back to default content after interacting with iframe
+        driver.switchTo().defaultContent();
     }
 
     @When("User Remove The {string} Stock")
     public void user_remove_the_stock(String string) throws InterruptedException {
+        // FIX: After navigate_to_home_page(), we're back in default context.
+        // The watchlist elements are on the main page (not in iframe), so this is correct.
         WebElement element = driver.findElement(
             By.xpath("//span[text()='" + string + "']//parent::div"));
         Actions ac = new Actions(driver);
@@ -88,6 +101,8 @@ public class PreMarkets extends BaseClass {
         driver.findElement(By.xpath("//button[text()=' Delete']")).click();
         Thread.sleep(2000);
     }
+
+    // ── Scenario: Payin - Withdraw ──────────────────────────────────────────
 
     @When("User Click The Withdraw button")
     public void user_click_the_withdraw_button() throws InterruptedException {
@@ -135,9 +150,11 @@ public class PreMarkets extends BaseClass {
                 System.out.println("Verify Pop is Not Displayed");
             }
         } catch (Exception e) {
-            // popup may have already disappeared
+            // popup may have already auto-dismissed
         }
     }
+
+    // ── Scenario: Payin - Add Money via UPI ────────────────────────────────
 
     @When("User Click Add Money")
     public void user_click_add_money() throws InterruptedException {
@@ -166,7 +183,6 @@ public class PreMarkets extends BaseClass {
 
         driver.switchTo().defaultContent();
 
-        // FIX: Fetch window handles inside method — not at class load time
         Set<String> windowHandles1 = driver.getWindowHandles();
         ArrayList<String> li1 = new ArrayList<>(windowHandles1);
         int size = li1.size();
@@ -190,7 +206,6 @@ public class PreMarkets extends BaseClass {
     public void user_choose_pay_using_upi() throws InterruptedException {
         Thread.sleep(2000);
 
-        // FIX: Fetch window handles inside method
         Set<String> windowHandles1 = driver.getWindowHandles();
         ArrayList<String> li1 = new ArrayList<>(windowHandles1);
         int size = li1.size();
@@ -203,11 +218,12 @@ public class PreMarkets extends BaseClass {
         Thread.sleep(5000);
     }
 
-    // FIX: Removed Robot import and AWTException entirely.
-    // Robot.keyPress() requires a physical display — fails headless.
-    // The original code already had Robot commented out — this just
-    // removes the import and exception signature to prevent compile warnings.
-    @When("User Enter UPI/ID/Mobile Number and click pay now")
+    // FIX 2: Added missing @When step definition for
+    // "User Enter UPI/ID/Mobile Number and click pay now"
+    // The feature file has this step but the step definition annotation used
+    // "User Enter UPI/ID/Mobile Number and click pay now" with a literal slash,
+    // which Cucumber couldn't match. Using escaped slashes in the annotation fixes it.
+    @When("User Enter UPI\\/ID\\/Mobile Number and click pay now")
     public void user_enter_upi_id_mobile_number_and_click_pay_now() throws InterruptedException {
 
         Thread.sleep(1000);
@@ -219,22 +235,19 @@ public class PreMarkets extends BaseClass {
         js.executeScript("window.scrollBy(0, 500)");
         js.executeScript("window.scrollBy(0, -500)");
 
-        WebElement netBanking = driver.findElement(By.xpath("//input[@placeholder='example@okhdfcbank']"));
-        netBanking.click();
+        WebElement upiField = driver.findElement(By.xpath("//input[@placeholder='example@okhdfcbank']"));
+        upiField.click();
+        Thread.sleep(1000);
+        upiField.sendKeys("6374837965@ptsbi");
         Thread.sleep(1000);
 
-        WebElement UPI = driver.findElement(By.xpath("//input[@placeholder='example@okhdfcbank']"));
-        UPI.sendKeys("6374837965@ptsbi");
-        Thread.sleep(1000);
-
-        WebElement clickPayUsingUPI = driver.findElement(By.xpath("//button[text()='Verify and Pay']"));
-        clickPayUsingUPI.click();
+        driver.findElement(By.xpath("//button[text()='Verify and Pay']")).click();
         Thread.sleep(3000);
 
         driver.findElement(By.xpath("//button[text()='Cancel Payment']")).click();
         driver.findElement(By.xpath("//button[@data-testid='confirm-positive']")).click();
 
-        WebDriverWait wait1 = new WebDriverWait(driver, java.time.Duration.ofMinutes(1));
+        WebDriverWait wait1 = new WebDriverWait(driver, Duration.ofMinutes(1));
         WebElement rejectedMessage = wait1.until(ExpectedConditions.visibilityOfElementLocated(
             By.xpath("//div[text()='Payment could not be completed']")));
 
@@ -249,6 +262,8 @@ public class PreMarkets extends BaseClass {
         driver.switchTo().parentFrame();
         driver.switchTo().defaultContent();
     }
+
+    // ── Scenario: Charts ───────────────────────────────────────────────────
 
     @When("User Click Watch List Again")
     public void user_click_watch_list_again() throws InterruptedException {
@@ -405,6 +420,9 @@ public class PreMarkets extends BaseClass {
         System.err.println("Feed Connection Value of 1 hour and 1 mins: " + text3);
     }
 
+    // FIX 3: framesHandling() calls driver.findElement("//iframe[@class='iframe_window']")
+    // but after outOfFrames() + navigate_to_home_page(), the page may still be loading
+    // causing NoSuchElementException for the iframe. Added explicit wait before framesHandling().
     @When("User Select The {string} Stock or F&O to Chart")
     public void user_select_the_stock_or_f_o_to_chart(String string) throws InterruptedException {
         Thread.sleep(2000);
@@ -432,6 +450,15 @@ public class PreMarkets extends BaseClass {
         }
 
         Thread.sleep(2000);
+
+        // FIX 3: Wait for iframe_window to be present before switching into it.
+        // Previously it called framesHandling() directly, which uses findElement()
+        // with no wait — if the chart panel hasn't rendered yet, it throws
+        // NoSuchElementException for //iframe[@class='iframe_window'].
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
+        wait.until(ExpectedConditions.presenceOfElementLocated(
+                By.xpath("//iframe[@class='iframe_window']")));
+
         framesHandling();
 
         driver.findElement(By.xpath("//div[@id='header-toolbar-intervals']")).click();
